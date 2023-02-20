@@ -1,0 +1,3 @@
+[submodule "travellers/app"]
+	path = travellers/app
+	url = https://github.com/RomanVII-2022/Traveller-Website.git
