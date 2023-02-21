@@ -21,8 +21,8 @@ class Blog(models.Model):
     slug = models.SlugField(max_length=100)
     tag = models.CharField(max_length=10)
     author = models.CharField(max_length=50)
-    image1 = models.ImageField(upload_to='photos')
-    image2 = models.ImageField(upload_to='photos')
+    image1 = models.ImageField(upload_to='photos', null=True, blank=True)
+    image2 = models.ImageField(upload_to='photos', null=True, blank=True)
     created_on = models.DateField(auto_now_add=True)
     updated_on = models.DateField(auto_now=True)
 

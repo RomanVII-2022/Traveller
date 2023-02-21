@@ -1,8 +1,11 @@
 import React, {useState, useEffect} from "react";
 import { Link } from "react-router-dom";
 import { getCategories, getBlogs } from "../services/ApiServices";
+import { useNavigate } from "react-router-dom";
 
 export const BlogList = () => {
+
+    const navigate = useNavigate()
 
     const [categories, setCategories] = useState([])
 
@@ -27,6 +30,9 @@ export const BlogList = () => {
 
             <div className="container-fluid py-5">
                 <div className="container py-5">
+                    <div className="col-md-2">
+                            <button className="btn btn-primary btn-block" onClick={() => navigate('/add-blog')} style={{height: "47px", marginBottom: "4px"}}>Add Blog</button>
+                    </div>
                     <div className="row">
                         <div className="col-lg-8">
                             <div className="row pb-3">
@@ -37,8 +43,8 @@ export const BlogList = () => {
                                                 <div className="position-relative">
                                                     <img className="img-fluid w-100" src={blog.image1} style={{height:"200px", objectFit:"cover"}} alt="" />
                                                     <div className="blog-date">
-                                                        <h6 className="font-weight-bold mb-n1">{blog.created_on}</h6>
-                                                        <small className="text-white text-uppercase">Jan</small>
+                                                        <h6 className="font-weight-bold mb-n1">{new Date(blog.created_on).toDateString().split(' ')[2]}</h6>
+                                                        <small className="text-white text-uppercase">{new Date(blog.created_on).toDateString().split(' ')[1]}</small>
                                                     </div>
                                                 </div>
                                                 <div className="bg-white p-4">
