@@ -12,7 +12,8 @@ import { Blogs } from './components/Blogs';
 import { BlogDetail } from './components/BlogDetail';
 import { AddBlog } from './components/AddBlog';
 import React, { useState, useEffect } from 'react';
-import { getCategories, getBlogs, addBlog } from './services/ApiServices';
+import { getCategories, getBlogs, addBlog, editBlog1 } from './services/ApiServices';
+import { EditBlog } from './components/EditBlog';
 
 function App() {
 
@@ -36,21 +37,26 @@ function App() {
 
   const handleAddBlogSubmit = (e) => {
     e.preventDefault()
-    console.log(e.target.category.value)
-    console.log(e.target.title.value)
-    console.log(e.target.description.value)
-    console.log(e.target.subtitle.value)
-    console.log(e.target.subdescription.value)
-    console.log(e.target.snippet.value)
-    console.log(e.target.slug.value)
-    console.log(e.target.tag.value)
-    console.log(e.target.author.value)
-    console.log(e.target.image1.value)
-    console.log(e.target.image2.value)
     addBlog(e.target)
     .then(res => {
       setBlogs(res)
     })
+  }
+
+  const [editBlog, setEditBlog] = useState([])
+  
+  const handleEditData = (blog) => {
+    setEditBlog(blog)
+  }
+
+  const handleEditBlogSubmit = (id, e) => {
+    e.preventDefault()
+    const formData = new FormData(e.target)
+    editBlog1(id, formData)
+    .then(res=>{
+      setBlogs(res)
+    })
+
   }
 
   return (
@@ -64,9 +70,12 @@ function App() {
           <Route path='services' element={<Services/>}></Route> 
           <Route path='tour-packages' element={<TourPackages />}></Route>
           <Route path='contact' element={<Contact />}></Route>
-          <Route path = 'blogs' element = {<Blogs/>}></Route>
+          <Route path = 'blogs' element = {<Blogs handleEditData = {handleEditData} />}></Route>
           <Route path = 'blog-details/:blogID' element={<BlogDetail />}></Route>
-          <Route path='add-blog' element={<AddBlog categories = {categories} handleAddBlogSubmit = {handleAddBlogSubmit} />}></Route>
+          <Route path='add-blog' element={<AddBlog categories = {categories} 
+          handleAddBlogSubmit = {handleAddBlogSubmit} />}></Route>
+          <Route path='edit-blog' element={<EditBlog categories = {categories} 
+          editBlog = {editBlog} handleEditBlogSubmit = {handleEditBlogSubmit} />}></Route>
         </Routes>
         <Footer />
       </Router>

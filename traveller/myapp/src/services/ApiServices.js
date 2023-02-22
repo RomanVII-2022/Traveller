@@ -24,23 +24,22 @@ export const getBlogDetails = (id) => {
 }
 
 export const addBlog = (blog) => {
-    return axios.post('http://localhost:8000/blogs/', 
-    {
-        id:null,
-        category:blog.category.value,
-        title:blog.title.value,
-        description:blog.description.value,
-        subtitle:blog.subtitle.value,
-        subdescription:blog.subdescription.value,
-        snippet:blog.snippet.value,
-        slug:blog.slug.value,
-        tag:blog.tag.value,
-        author:blog.author.value,
-        
-    })
+
+    const formData = new FormData(blog)
+
+    return axios.post('http://localhost:8000/blogs/', formData)
     .then(res => {
         return res.data
     }).catch(() => {
         alert("Something went wrong while adding blog")
+    })
+}
+
+export const editBlog1 = (id, blog) => {
+    return axios.put('http://localhost:8000/blogs/'+id+'/', blog)
+    .then(res => {
+        return res.data
+    }).catch(() => {
+        alert("Something went wrong while editing blog")
     })
 }
