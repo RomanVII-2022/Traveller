@@ -14,6 +14,7 @@ import { AddBlog } from './components/AddBlog';
 import React, { useState, useEffect } from 'react';
 import { getCategories, getBlogs, addBlog, editBlog1 } from './services/ApiServices';
 import { EditBlog } from './components/EditBlog';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
 

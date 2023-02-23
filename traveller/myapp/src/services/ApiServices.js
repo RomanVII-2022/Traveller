@@ -43,3 +43,10 @@ export const editBlog1 = (id, blog) => {
         alert("Something went wrong while editing blog")
     })
 }
+
+export const deleteBlog = (id) => {
+    return axios.delete('http://localhost:8000/blogs/'+id+'/')
+    .then(res => {
+        return res.data
+    })
+}

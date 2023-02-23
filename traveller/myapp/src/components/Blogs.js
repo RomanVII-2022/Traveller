@@ -1,8 +1,9 @@
 import React, {useState, useEffect} from "react";
 import { Booking } from "./Booking";
 import { Link } from "react-router-dom";
-import { getCategories, getBlogs } from "../services/ApiServices";
+import { getCategories, getBlogs, deleteBlog } from "../services/ApiServices";
 import { useNavigate } from "react-router-dom";
+import { DeleteBlog } from "./DeleteBlog";
 
 
 export const Blogs = ({handleEditData}) => {
@@ -27,6 +28,39 @@ export const Blogs = ({handleEditData}) => {
         })
     }, [])
 
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    const [deleteData, setDeleteData] = useState()
+
+    const handleModalDelete = (id) => {
+        setDeleteData(id)
+        setShow(true)
+    }
+
+    const handleDelete = () => {
+        deleteBlog(deleteData)
+        setShow(false)
+        .then(res => {
+            setBlogs.filter((blog) => blog.id !== deleteData)
+        })
+    }
+
+    const [showCard, setShowCard] = useState(false)
+
+    const [searchData, setSearchData] = useState('')
+
+    const handleSearch = (e) => {
+        if (e.target.value.length > 2) {
+            setShowCard(true)
+            setSearchData(e.target.value)
+        }else {
+            setShowCard(false)
+        }
+    }
+
     return (
         <div>
             <div className="container-fluid page-header">
@@ -42,13 +76,13 @@ export const Blogs = ({handleEditData}) => {
                 </div>
             </div>
             <Booking />
-            <div class="container-fluid py-5">
-                <div class="container py-5">
-                    <div class="row">
+            <div className="container-fluid py-5">
+                <div className="container py-5">
+                    <div className="row">
                         <div className="container-fluid py-5">
                 <div className="container py-5">
                     <div className="col-md-2">
-                            <button className="btn btn-primary btn-block" onClick={() => navigate('/add-blog')} style={{height: "47px", marginBottom: "4px"}}>Add Blog</button>
+                            <button className="btn btn-primary" onClick={() => navigate('/add-blog')} style={{marginBottom: "4px"}}>Add Blog</button>
                     </div>
                     <div className="row">
                         <div className="col-lg-8">
@@ -71,7 +105,10 @@ export const Blogs = ({handleEditData}) => {
                                                         <a className="text-primary text-uppercase text-decoration-none" href="">{categories.filter(category => category.id === blog.category).map(category => (category.name))}</a>
                                                     </div>
                                                     <Link className="h5 m-0 text-decoration-none" to={`/blog-details/${blog.id}`}>{blog.title}</Link><br/>
-                                                    <Link className="text-primary text-uppercase text-decoration-none" to="/edit-blog" onClick={() => handleEditData(blog)} >Edit</Link>
+                                                    <Link className="text-primary text-uppercase text-decoration-none" to="/edit-blog" onClick={() => handleEditData(blog)} >Edit</Link> - 
+                                                    <Link  className="text-primary text-uppercase text-decoration-none" variant="primary" onClick={() => handleModalDelete(blog.id)}>
+                                                         Delete
+                                                    </Link>
                                                 </div>
                                             </div>
                                         </div>   
@@ -130,11 +167,23 @@ export const Blogs = ({handleEditData}) => {
                             <div className="mb-5">
                                 <div className="bg-white" style={{padding: "30px"}}>
                                     <div className="input-group">
-                                        <input type="text" className="form-control p-4" placeholder="Keyword" />
+                                        <input type="text" className="form-control p-4" name="search" onChange={(e) => handleSearch(e)} placeholder="Keyword" />
                                         <div className="input-group-append">
                                             <span className="input-group-text bg-primary border-primary text-white"><i
                                                     className="fa fa-search"></i></span>
                                         </div>
+                                        {showCard ? 
+                                        <div className="card" style={{width: "16rem"}}>
+                                            <div className="card-body" style={{overflow:"auto"}}>
+                                                {
+                                                    blogs.filter((blog) => blog.title.toLowerCase().includes(searchData)).map((blog) => (
+                                                        <h6 className="card-title"><Link to={`/blog-details/${blog.id}`}>{blog.title}</Link></h6>
+                                                    ))
+                                                        
+                                                }
+                                            </div>
+                                        </div> : ''
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -158,39 +207,33 @@ export const Blogs = ({handleEditData}) => {
 
                             <div className="mb-5">
                                 <h4 className="text-uppercase mb-4" style={{letterSpacing: "5px"}}>Recent Post</h4>
-                                <a className="d-flex align-items-center text-decoration-none bg-white mb-3" href="">
-                                    <img className="img-fluid" src="img/blog-100x100.jpg" alt="" />
-                                    <div className="pl-3">
-                                        <h6 className="m-1">Diam lorem dolore justo eirmod lorem dolore</h6>
-                                        <small>Jan 01, 2050</small>
-                                    </div>
-                                </a>
-                                <a className="d-flex align-items-center text-decoration-none bg-white mb-3" href="">
-                                    <img className="img-fluid" src="img/blog-100x100.jpg" alt="" />
-                                    <div className="pl-3">
-                                        <h6 className="m-1">Diam lorem dolore justo eirmod lorem dolore</h6>
-                                        <small>Jan 01, 2050</small>
-                                    </div>
-                                </a>
-                                <a className="d-flex align-items-center text-decoration-none bg-white mb-3" href="">
-                                    <img className="img-fluid" src="img/blog-100x100.jpg" alt="" />
-                                    <div className="pl-3">
-                                        <h6 className="m-1">Diam lorem dolore justo eirmod lorem dolore</h6>
-                                        <small>Jan 01, 2050</small>
-                                    </div>
-                                </a>
+                                {
+                                    blogs.slice(0,3).map((blog) => (
+                                        <a className="d-flex align-items-center text-decoration-none bg-white mb-3" href="">
+                                            <img className="img-fluid" style={{width:"50px", height:"50px", objectFit:"cover"}} src={blog.image1} alt="" />
+                                            <div className="pl-3">
+                                                <h6 className="m-1"><Link className="text-decoration-none" to={`/blog-details/${blog.id}`}>{blog.title}</Link></h6>
+                                                <small>
+                                                    {
+                                                        new Date(blog.created_on).toDateString()
+                                                    }
+                                                </small>
+                                            </div>
+                                        </a>
+                                    ))
+                                }
                             </div>
             
 
                             <div className="mb-5">
                                 <h4 className="text-uppercase mb-4" style={{letterSpacing: "5px"}}>Tag Cloud</h4>
                                 <div className="d-flex flex-wrap m-n1">
-                                    <a href="" className="btn btn-light m-1">Design</a>
-                                    <a href="" className="btn btn-light m-1">Development</a>
-                                    <a href="" className="btn btn-light m-1">Marketing</a>
-                                    <a href="" className="btn btn-light m-1">SEO</a>
-                                    <a href="" className="btn btn-light m-1">Writing</a>
-                                    <a href="" className="btn btn-light m-1">Consulting</a>
+                                    {
+                                        blogs.map(blog => (
+                                            <a href="" className="btn btn-light m-1">{blog.tag}</a>
+                                        ))
+                                    
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -200,6 +243,7 @@ export const Blogs = ({handleEditData}) => {
                     </div>
                 </div>
             </div>
+            <DeleteBlog handleClose={handleClose} show = {show} handleDelete = {handleDelete} />
         </div>
     );
 }

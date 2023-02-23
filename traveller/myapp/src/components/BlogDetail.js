@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Booking } from "./Booking";
-import { getBlogDetails } from "../services/ApiServices";
+import { getBlogDetails, getCategories, getBlogs } from "../services/ApiServices";
+import { Link } from "react-router-dom";
 
 export const BlogDetail = () => {
 
@@ -15,6 +16,37 @@ export const BlogDetail = () => {
             setBlog(res)
         })
     }, [])
+
+    const [categories, setCategories] = useState([])
+
+    useEffect(() => {
+        getCategories()
+        .then(res => {
+            setCategories(res)
+        })
+    }, [])
+
+    const [blogs, setBlogs] = useState([])
+
+    useEffect(() => {
+        getBlogs()
+        .then(res => {
+            setBlogs(res)
+        })
+    }, [])
+
+    const [showCard, setShowCard] = useState(false)
+
+    const [searchData, setSearchData] = useState('')
+
+    const handleSearch = (e) => {
+        if (e.target.value.length > 2) {
+            setShowCard(true)
+            setSearchData(e.target.value)
+        }else {
+            setShowCard(false)
+        }
+    }
 
     return(
         <div>
@@ -152,82 +184,71 @@ export const BlogDetail = () => {
                             <div className="mb-5">
                                 <div className="bg-white" style={{padding: "30px"}}>
                                     <div className="input-group">
-                                        <input type="text" className="form-control p-4" placeholder="Keyword" />
+                                        <input type="text" className="form-control p-4" name="search" onChange={(e) => handleSearch(e)} placeholder="Keyword" />
                                         <div className="input-group-append">
                                             <span className="input-group-text bg-primary border-primary text-white"><i
                                                     className="fa fa-search"></i></span>
                                         </div>
+                                        {showCard ? 
+                                        <div className="card" style={{width: "16rem"}}>
+                                            <div className="card-body" style={{overflow:"auto"}}>
+                                                {
+                                                    blogs.filter((blog) => blog.title.toLowerCase().includes(searchData)).map((blog) => (
+                                                        <h6 className="card-title"><Link to={`/blog-details/${blog.id}`}>{blog.title}</Link></h6>
+                                                    ))
+                                                        
+                                                }
+                                            </div>
+                                        </div> : ''
+                                        }
                                     </div>
                                 </div>
                             </div>
 
                             <div className="mb-5">
-                                <h4 className="text-uppercase mb-4" style={{letterSpaccing: "5px"}}>Categories</h4>
+                                <h4 className="text-uppercase mb-4" style={{letterSpacing: "5px"}}>Categories</h4>
                                 <div className="bg-white" style={{padding: "30px"}}>
                                     <ul className="list-inline m-0">
-                                        <li className="mb-3 d-flex justify-content-between align-items-center">
-                                            <a className="text-dark" href="#"><i className="fa fa-angle-right text-primary mr-2"></i>Web
-                                                Design</a>
-                                            <span className="badge badge-primary badge-pill">150</span>
-                                        </li>
-                                        <li className="mb-3 d-flex justify-content-between align-items-center">
-                                            <a className="text-dark" href="#"><i className="fa fa-angle-right text-primary mr-2"></i>Web
-                                                Development</a>
-                                            <span className="badge badge-primary badge-pill">131</span>
-                                        </li>
-                                        <li className="mb-3 d-flex justify-content-between align-items-center">
-                                            <a className="text-dark" href="#"><i
-                                                    className="fa fa-angle-right text-primary mr-2"></i>Online Marketing</a>
-                                            <span className="badge badge-primary badge-pill">78</span>
-                                        </li>
-                                        <li className="mb-3 d-flex justify-content-between align-items-center">
-                                            <a className="text-dark" href="#"><i
-                                                    className="fa fa-angle-right text-primary mr-2"></i>Keyword Research</a>
-                                            <span className="badge badge-primary badge-pill">56</span>
-                                        </li>
-                                        <li className="d-flex justify-content-between align-items-center">
-                                            <a className="text-dark" href="#"><i
-                                                    className="fa fa-angle-right text-primary mr-2"></i>Email Marketing</a>
-                                            <span className="badge badge-primary badge-pill">98</span>
-                                        </li>
+                                        {
+                                            categories.map((category) => (
+                                                <li className="mb-3 d-flex justify-content-between align-items-center">
+                                                    <a className="text-dark" href="#"><i className="fa fa-angle-right text-primary mr-2"></i>{category.name}</a>
+                                                    <span className="badge badge-primary badge-pill">150</span>
+                                                </li>
+                                            ))
+                                        }
                                     </ul>
                                 </div>
                             </div>
             
                             <div className="mb-5">
-                                <h4 className="text-uppercase mb-4" style={{letterSpaccing: "5px"}}>Recent Post</h4>
-                                <a className="d-flex align-items-center text-decoration-none bg-white mb-3" href="">
-                                    <img className="img-fluid" src="img/blog-100x100.jpg" alt="" />
-                                    <div className="pl-3">
-                                        <h6 className="m-1">Diam lorem dolore justo eirmod lorem dolore</h6>
-                                        <small>Jan 01, 2050</small>
-                                    </div>
-                                </a>
-                                <a className="d-flex align-items-center text-decoration-none bg-white mb-3" href="">
-                                    <img className="img-fluid" src="img/blog-100x100.jpg" alt="" />
-                                    <div className="pl-3">
-                                        <h6 className="m-1">Diam lorem dolore justo eirmod lorem dolore</h6>
-                                        <small>Jan 01, 2050</small>
-                                    </div>
-                                </a>
-                                <a className="d-flex align-items-center text-decoration-none bg-white mb-3" href="">
-                                    <img className="img-fluid" src="img/blog-100x100.jpg" alt="" />
-                                    <div className="pl-3">
-                                        <h6 className="m-1">Diam lorem dolore justo eirmod lorem dolore</h6>
-                                        <small>Jan 01, 2050</small>
-                                    </div>
-                                </a>
+                                <h4 className="text-uppercase mb-4" style={{letterSpacing: "5px"}}>Recent Post</h4>
+                                {
+                                    blogs.slice(0,3).map((blog) => (
+                                        <a className="d-flex align-items-center text-decoration-none bg-white mb-3" href="">
+                                            <img className="img-fluid" style={{width:"50px", height:"50px", objectFit:"cover"}} src={blog.image1} alt="" />
+                                            <div className="pl-3">
+                                                <h6 className="m-1"><Link className="text-decoration-none" to={`/blog-details/${blog.id}`}>{blog.title}</Link></h6>
+                                                <small>
+                                                    {
+                                                        new Date(blog.created_on).toDateString()
+                                                    }
+                                                </small>
+                                            </div>
+                                        </a>
+                                    ))
+                                }
                             </div>
             
                             <div className="mb-5">
-                                <h4 className="text-uppercase mb-4" style={{letterSpaccing: "5px"}}>Tag Cloud</h4>
+                                <h4 className="text-uppercase mb-4" style={{letterSpacing: "5px"}}>Tag Cloud</h4>
                                 <div className="d-flex flex-wrap m-n1">
-                                    <a href="" className="btn btn-light m-1">Design</a>
-                                    <a href="" className="btn btn-light m-1">Development</a>
-                                    <a href="" className="btn btn-light m-1">Marketing</a>
-                                    <a href="" className="btn btn-light m-1">SEO</a>
-                                    <a href="" className="btn btn-light m-1">Writing</a>
-                                    <a href="" className="btn btn-light m-1">Consulting</a>
+                                    {
+                                        blogs.map(blog => (
+                                            <a href="" className="btn btn-light m-1">{blog.tag}</a>
+                                        ))
+                                    
+                                    }
                                 </div>
                             </div>
                         </div>
